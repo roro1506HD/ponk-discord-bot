@@ -1,0 +1,15 @@
+{
+  "name": "ponk",
+  "version": "1.0.0",
+  "description": "PonK's discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "roro1506_HD",
+  "license": "ISC",
+  "dependencies": {
+    "async-exit-hook": "^2.0.1",
+    "discord.js": "^11.5.1"
+  }
+}
