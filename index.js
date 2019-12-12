@@ -39,12 +39,12 @@ client.on('ready', () => {
             messages.first().delete();
     });
 
-    
+
     settingsChannel.fetchMessages({limit: 1}).then(messages => {
         if (messages.size > 0)
             messages.first().delete();
     });
-    
+
     limboChannel.send({embed:{
         "description": "Salut, si t'es ici, c'est pas normal. Mets la réaction ci-dessous pour **essayer** de corriger le problème. Si ce \"c'est pas normal\" persiste, je t'invite à contacter un membre de l'administration de ce magnifique Discord.",
         "color": 14302994
@@ -55,7 +55,7 @@ client.on('ready', () => {
     });
 
     settingsChannel.send({embed:{
-        "description": "Utilisez les réactions ci-dessous afin de subvenir à vos besoins de notifications quotidiennes (ou presque) !\n\nCi-dessous des expliquations courtes de qui fait quoi :\n\n🎬 » Permet de recevoir les notifications des nouvelles vidéos.\n📹 » Permet de recevoir les notifications des streams",
+        "description": "Utilisez les réactions ci-dessous afin de gérer vos besoins de notifications quotidiennes (ou presque) !\n\nCi-dessous des expliquations courtes de qui fait quoi :\n\n🎬 » Permet de recevoir/ne plus recevoir les notifications des nouvelles vidéos.\n📹 » Permet de recevoir/ne plus recevoir les notifications des streams",
         "color": 15499520
     }}).then(message => {
         settingsMessage = message;
@@ -63,7 +63,7 @@ client.on('ready', () => {
         message.react('🎬');
         message.react('📹');
     });
-    
+
     client.user.setActivity('Toujours la patate');
 });
 
@@ -86,28 +86,25 @@ client.on('messageReactionAdd', (reaction, user) => {
 
     if (reaction.emoji.name === '🎬') {
         guild.fetchMember(user).then(member => {
-            member.addRole('608110004771225620', 'Added reaction to settings channel.');
+            if (!member.roles.has('608110004771225620'))
+                member.addRole('608110004771225620', 'Added reaction to settings channel.').then(unused => reaction.remove(member));
+            else
+                member.removeRole('608110004771225620', 'Added reaction to settings channel.').then(unused => reaction.remove(member));
         });
     } else if (reaction.emoji.name === '📹') {
         guild.fetchMember(user).then(member => {
-            member.addRole('608109922546089984', 'Added reaction to settings channel.');
+            if (!member.roles.has('608109922546089984'))
+                member.addRole('608109922546089984', 'Added reaction to settings channel.').then(unused => reaction.remove(member));
+            else
+                member.removeRole('608109922546089984', 'Added reaction to settings channel.').then(unused => reaction.remove(member));
         });
     }
 });
 
-client.on('messageReactionRemove', (reaction, user) => {
-    if (!settingsMessage || reaction.message.id !== settingsMessage.id || user.bot)
-        return;
-
-    if (reaction.emoji.name === '🎬') {
-        guild.fetchMember(user).then(member => {
-            member.removeRole('608110004771225620', 'Removed reaction from settings channel.');
-        });
-    } else if (reaction.emoji.name === '📹') {
-        guild.fetchMember(user).then(member => {
-            member.removeRole('608109922546089984', 'Removed reaction from settings channel.');
-        });
-    }
+// On-join rank add
+client.on("guildMemberAdd", member => {
+    member.addRole('608110004771225620', 'Joined the discord server');
+    member.addRole('608109922546089984', 'Joined the discord server');
 });
 
 client.login(config.token);
